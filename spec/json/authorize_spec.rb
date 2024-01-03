@@ -71,6 +71,22 @@ describe Datatrans::JSON::Transaction::Authorize do
     end
   end
 
+  context "with card provided" do
+    it "uses card in request_body" do
+      card_params = {
+        "alias": "AAABcH0Bq92s3kgAESIAAbGj5NIsAHWC",
+        "expiryMonth": "06",
+        "expiryYear": "25"
+      }
+
+      params_with_auto_settle = @valid_params.merge(card: card_params)
+      request = Datatrans::JSON::Transaction::Authorize.new(@datatrans, params_with_auto_settle)
+
+      expected_request_body_with_card = @expected_request_body.merge("card" => card_params)
+      expect(request.request_body).to eq(expected_request_body_with_card)
+    end
+  end
+
   context "failed response" do
     before do
       allow_any_instance_of(Datatrans::JSON::Transaction::Authorize).to receive(:process).and_return(@failed_response)
